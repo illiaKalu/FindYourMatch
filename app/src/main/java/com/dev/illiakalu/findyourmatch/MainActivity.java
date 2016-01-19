@@ -1,44 +1,102 @@
 package com.dev.illiakalu.findyourmatch;
 
-import android.support.v7.app.ActionBarActivity;
+
+import android.os.Handler;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.dev.illiakalu.findyourmatch.Fragments.GenerateFragment;
+import com.dev.illiakalu.findyourmatch.Fragments.MatchFragment;
+import com.dev.illiakalu.findyourmatch.Fragments.ResultAndMapFragment;
+import com.dev.illiakalu.findyourmatch.Fragments.SplashFragment;
+import com.dev.illiakalu.findyourmatch.Utils.SharedPreferencesStorer;
+
+import org.testpackage.test_sdk.android.testlib.API;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private boolean _showSplash = true;
+    private boolean doubleBackToExitPressedOnce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar);
-        pb.setVisibility(View.VISIBLE);
+        Log.d(TAG, "mainActivity ");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "start initializing API from parallel thread");
+                API.INSTANCE.init(getApplicationContext());
+            }
+        }).start();
+
+        toSplash();
+
     }
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onResume() {
+        super.onResume();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void toSplash() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.container, new SplashFragment())
+                .commit();
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void toResultAndMap() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.container, new ResultAndMapFragment())
+                .commit();
+    }
+
+    public void toGenerate() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.container, new GenerateFragment())
+                .commit();
+    }
+
+    public void toMatch() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.container, new MatchFragment())
+                .commit();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            // Standard back button implementation (for example this could close the app)
+            super.onBackPressed();
+            return;
         }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
-        return super.onOptionsItemSelected(item);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
+
     }
 }
