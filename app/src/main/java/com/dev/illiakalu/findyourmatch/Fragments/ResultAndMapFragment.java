@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dev.illiakalu.findyourmatch.MainActivity;
+import com.dev.illiakalu.findyourmatch.PersonsGlobalArrayList;
 import com.dev.illiakalu.findyourmatch.R;
 
 /**

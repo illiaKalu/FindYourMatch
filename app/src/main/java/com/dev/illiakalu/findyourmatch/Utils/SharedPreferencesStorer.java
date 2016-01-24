@@ -43,4 +43,13 @@ public class SharedPreferencesStorer {
             editor.commit();
     }
 
+    public void incrementPageOfPersons() {
+        editor.putInt("pageNumber", getPageOfPersonsToLoad() + 1);
+        editor.commit();
+
+    }
+
+    public int getPageOfPersonsToLoad(){
+        return prefs.getInt("pageNumber", 0);
+    }
 }

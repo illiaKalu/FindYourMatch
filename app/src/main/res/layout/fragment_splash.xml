@@ -21,6 +21,6 @@
         android:layout_below="@+id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
-        android:textSize="40sp"/>
+        android:textSize="20sp"/>
 
 </RelativeLayout>

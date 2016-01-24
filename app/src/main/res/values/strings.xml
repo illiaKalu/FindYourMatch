@@ -2,4 +2,8 @@
     <string name="app_name">FindYourMatch</string>
 
     <string name="splash_screen_text">Initializing API</string>
+    <string name="errorText">no more users for you for today =(</string>
+    <string name="generate">generate</string>
+    <string name="back">back</string>
+    <string name="congrats">Congratulations !</string>
 </resources>

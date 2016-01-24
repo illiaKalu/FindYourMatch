@@ -2,6 +2,8 @@ package com.dev.illiakalu.findyourmatch.Fragments;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -12,8 +14,17 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.dev.illiakalu.findyourmatch.MainActivity;
+import com.dev.illiakalu.findyourmatch.Person;
+import com.dev.illiakalu.findyourmatch.PersonsGlobalArrayList;
 import com.dev.illiakalu.findyourmatch.R;
 import com.dev.illiakalu.findyourmatch.Utils.SharedPreferencesStorer;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import org.testpackage.test_sdk.android.testlib.API;
+import org.testpackage.test_sdk.android.testlib.interfaces.SuccessCallback;
+
+import java.util.ArrayList;
 
 
 /**
@@ -40,21 +51,51 @@ public class SplashFragment extends Fragment {
         pb = ((ProgressBar) v.findViewById(R.id.progressBar));
         pb.getIndeterminateDrawable()
                 .setColorFilter(Color.parseColor("#f3923b"), PorterDuff.Mode.SRC_IN);
-        pb.setVisibility(View.VISIBLE);
 
-        new Handler().postDelayed(new Runnable() {
+        new AsyncTask<ProgressBar, Void, Void>(){
 
             @Override
-            public void run() {
+            protected void onPreExecute() {
+                pb.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected Void doInBackground(ProgressBar... params) {
+                API.INSTANCE.init(getContext());
+                ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getContext()).build();
+                ImageLoader.getInstance().init(config);
+                API.INSTANCE.refreshPersons(new SuccessCallback() {
+                    @Override
+                    public void onSuccess() {
+                        // ?
+                    }
+                });
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+
                 if (SharedPreferencesStorer.getInstance(getContext()).isFirstLaunch()) {
                     SharedPreferencesStorer.getInstance(getContext()).setIsFirstLaunch(false);
                     ((MainActivity)getActivity()).toGenerate();
                 }else{
-                    ((MainActivity)getActivity()).toResultAndMap();
+                    // how it must be :
+                    // load Data from DB
+                    // fill up PersonsGlobalArrayList
+                    // go to Result screen ((MainActivity)getActivity()).toResultAndMap();
+
+                    // wrong way !
+                    ((MainActivity)getActivity()).toGenerate();
+
                 }
+
+                pb.setVisibility(View.INVISIBLE);
             }
 
-        }, 5000);
+        }.execute(pb, null, null);
+
+
 
         return v;
     }

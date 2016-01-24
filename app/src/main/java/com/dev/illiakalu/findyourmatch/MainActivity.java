@@ -2,6 +2,7 @@ package com.dev.illiakalu.findyourmatch;
 
 
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.dev.illiakalu.findyourmatch.Fragments.GenerateFragment;
 import com.dev.illiakalu.findyourmatch.Fragments.MatchFragment;
 import com.dev.illiakalu.findyourmatch.Fragments.ResultAndMapFragment;
 import com.dev.illiakalu.findyourmatch.Fragments.SplashFragment;
+import com.dev.illiakalu.findyourmatch.Utils.InternetConnectionChecker;
 import com.dev.illiakalu.findyourmatch.Utils.SharedPreferencesStorer;
 
 import org.testpackage.test_sdk.android.testlib.API;
@@ -20,7 +22,6 @@ import org.testpackage.test_sdk.android.testlib.API;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private boolean _showSplash = true;
     private boolean doubleBackToExitPressedOnce;
 
     @Override
@@ -30,13 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "mainActivity ");
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "start initializing API from parallel thread");
-                API.INSTANCE.init(getApplicationContext());
-            }
-        }).start();
+        if (InternetConnectionChecker.isNetAvailable(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "INTERNET IS AVAILABLE !", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(getApplicationContext(), "INTERNET IS  NOT !AVAILABLE ! Go to settings and turn it on! ", Toast.LENGTH_LONG).show();
+        }
+
 
         toSplash();
 
@@ -72,13 +72,19 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void toMatch() {
+    public void toMatch(Bundle personId) {
+        Fragment matchFragment = new MatchFragment();
+        matchFragment.setArguments(personId);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.container, new MatchFragment())
+                .replace(R.id.container, matchFragment, "matchFragment")
                 .commit();
     }
+
+
+
 
 
     @Override
